@@ -1,0 +1,2645 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Ultimate Name Spinner</title>
+
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+
+        body {
+
+            min-height: 100vh;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #667eea,
+                    #764ba2
+                );
+
+            display: flex;
+
+            justify-content: center;
+            align-items: center;
+
+            padding: 25px;
+        }
+
+
+        /* =========================
+           MAIN GAME
+        ========================= */
+
+        .game {
+
+            width: 1150px;
+
+            max-width: 100%;
+
+            min-height: 680px;
+
+            background: white;
+
+            border-radius: 25px;
+
+            padding: 30px;
+
+            display: flex;
+
+            gap: 45px;
+
+            align-items: center;
+
+            box-shadow:
+                0 20px 60px
+                rgba(0,0,0,0.30);
+        }
+
+
+        /* =========================
+           LEFT PANEL
+        ========================= */
+
+        .panel {
+
+            width: 330px;
+
+            flex-shrink: 0;
+        }
+
+
+        .title {
+
+            font-size: 34px;
+
+            color: #222;
+
+            margin-bottom: 8px;
+        }
+
+
+        .subtitle {
+
+            color: #777;
+
+            margin-bottom: 22px;
+
+            font-size: 15px;
+        }
+
+
+        /* =========================
+           INPUT
+        ========================= */
+
+        .input-area {
+
+            display: flex;
+
+            gap: 8px;
+
+            margin-bottom: 18px;
+        }
+
+
+        #nameInput {
+
+            flex: 1;
+
+            min-width: 0;
+
+            padding: 13px;
+
+            border:
+                2px solid #ddd;
+
+            border-radius: 10px;
+
+            outline: none;
+
+            font-size: 16px;
+
+            transition: 0.2s;
+        }
+
+
+        #nameInput:focus {
+
+            border-color: #667eea;
+        }
+
+
+        #nameInput:disabled {
+
+            background: #eee;
+
+            cursor: not-allowed;
+        }
+
+
+        .add-btn {
+
+            border: none;
+
+            padding: 12px 17px;
+
+            background: #667eea;
+
+            color: white;
+
+            border-radius: 10px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+
+        .add-btn:hover {
+
+            background: #5365d8;
+        }
+
+
+        .add-btn:disabled {
+
+            background: #999;
+
+            cursor: not-allowed;
+        }
+
+
+        /* =========================
+           NAME LIST
+        ========================= */
+
+        .name-list {
+
+            height: 340px;
+
+            overflow-y: auto;
+
+            padding-right: 5px;
+        }
+
+
+        .name-item {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            padding: 11px 13px;
+
+            margin-bottom: 8px;
+
+            background: #f3f4f6;
+
+            border-radius: 9px;
+
+            font-weight: bold;
+
+            color: #333;
+
+            transition: 0.2s;
+        }
+
+
+        .name-item:hover {
+
+            transform: translateX(3px);
+
+            background: #e9e9ef;
+        }
+
+
+        .name-number {
+
+            color: #888;
+
+            margin-right: 8px;
+
+            font-size: 13px;
+        }
+
+
+        .priority {
+
+            color: #667eea;
+
+            font-size: 11px;
+
+            margin-left: 5px;
+        }
+
+
+        .delete-name {
+
+            border: none;
+
+            background: #ff4757;
+
+            color: white;
+
+            width: 28px;
+
+            height: 28px;
+
+            border-radius: 7px;
+
+            cursor: pointer;
+
+            font-weight: bold;
+        }
+
+
+        .delete-name:hover {
+
+            background: #e84118;
+        }
+
+
+        .delete-name:disabled {
+
+            background: #aaa;
+
+            cursor: not-allowed;
+        }
+
+
+        /* =========================
+           RESULT
+        ========================= */
+
+        .result {
+
+            margin-top: 18px;
+
+            padding: 16px;
+
+            background: #f1f2f6;
+
+            border-radius: 12px;
+
+            text-align: center;
+
+            font-size: 20px;
+
+            font-weight: bold;
+
+            color: #333;
+        }
+
+
+        /* =========================
+           WHEEL AREA
+        ========================= */
+
+        .wheel-area {
+
+            flex: 1;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            position: relative;
+        }
+
+
+        .wheel-wrapper {
+
+            width: 530px;
+
+            height: 530px;
+
+            position: relative;
+        }
+
+
+        canvas {
+
+            width: 100%;
+
+            height: 100%;
+
+            border-radius: 50%;
+
+            box-shadow:
+
+                0 0 0 8px #222,
+
+                0 15px 40px
+                rgba(0,0,0,0.35);
+        }
+
+
+        /* =========================
+           POINTER
+        ========================= */
+
+        .pointer {
+
+            position: absolute;
+
+            top: -8px;
+
+            left: 50%;
+
+            transform:
+                translateX(-50%);
+
+            width: 0;
+
+            height: 0;
+
+            border-left:
+                28px solid transparent;
+
+            border-right:
+                28px solid transparent;
+
+            border-top:
+                62px solid #222;
+
+            z-index: 10;
+
+            filter:
+                drop-shadow(
+                    0 3px 3px
+                    rgba(0,0,0,0.3)
+                );
+        }
+
+
+        /* =========================
+           SPIN BUTTON
+        ========================= */
+
+        .spin-button {
+
+            position: absolute;
+
+            top: 50%;
+
+            left: 50%;
+
+            transform:
+                translate(-50%, -50%);
+
+            width: 120px;
+
+            height: 120px;
+
+            border-radius: 50%;
+
+            border:
+                9px solid white;
+
+            background: #ff4757;
+
+            color: white;
+
+            font-size: 21px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            z-index: 5;
+
+            box-shadow:
+                0 7px 18px
+                rgba(0,0,0,0.35);
+
+            transition: 0.2s;
+        }
+
+
+        .spin-button:hover {
+
+            transform:
+                translate(-50%, -50%)
+                scale(1.06);
+        }
+
+
+        .spin-button:disabled {
+
+            background: #999;
+
+            cursor: not-allowed;
+
+            transform:
+                translate(-50%, -50%);
+        }
+
+
+        /* =========================
+           MODAL
+        ========================= */
+
+        .modal {
+
+            position: fixed;
+
+            inset: 0;
+
+            background:
+                rgba(0,0,0,0.68);
+
+            display: none;
+
+            justify-content: center;
+
+            align-items: center;
+
+            z-index: 100;
+        }
+
+
+        .modal.show {
+
+            display: flex;
+        }
+
+
+        .modal-box {
+
+            width: 420px;
+
+            max-width: 90%;
+
+            background: white;
+
+            padding: 35px;
+
+            border-radius: 22px;
+
+            text-align: center;
+
+            box-shadow:
+                0 25px 70px
+                rgba(0,0,0,0.45);
+
+            animation:
+                popup 0.3s ease;
+        }
+
+
+        @keyframes popup {
+
+            from {
+
+                transform: scale(0.65);
+
+                opacity: 0;
+            }
+
+            to {
+
+                transform: scale(1);
+
+                opacity: 1;
+            }
+        }
+
+
+        .trophy {
+
+            font-size: 65px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .modal-box h2 {
+
+            font-size: 28px;
+
+            color: #333;
+
+            margin-bottom: 10px;
+        }
+
+
+        .winner-name {
+
+            font-size: 34px;
+
+            font-weight: bold;
+
+            color: #667eea;
+
+            margin:
+                15px 0 20px;
+        }
+
+
+        .modal-box p {
+
+            color: #666;
+
+            margin-bottom: 22px;
+
+            line-height: 1.4;
+        }
+
+
+        .modal-buttons {
+
+            display: flex;
+
+            gap: 12px;
+
+            justify-content: center;
+        }
+
+
+        .modal-buttons button {
+
+            border: none;
+
+            padding:
+                13px 22px;
+
+            border-radius: 10px;
+
+            color: white;
+
+            font-size: 15px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+
+        .yes-btn {
+
+            background: #1dd1a1;
+        }
+
+
+        .yes-btn:hover {
+
+            background: #10ac84;
+        }
+
+
+        .no-btn {
+
+            background: #ff4757;
+        }
+
+
+        .no-btn:hover {
+
+            background: #e84118;
+        }
+
+
+        /* =========================
+           EMPTY MESSAGE
+        ========================= */
+
+        .empty {
+
+            text-align: center;
+
+            color: #999;
+
+            padding: 30px 10px;
+
+            font-size: 14px;
+        }
+
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 900px) {
+
+            .game {
+
+                flex-direction: column;
+
+                padding: 25px;
+            }
+
+
+            .panel {
+
+                width: 100%;
+            }
+
+
+            .wheel-wrapper {
+
+                width: 450px;
+
+                height: 450px;
+            }
+        }
+
+
+        @media (max-width: 520px) {
+
+            body {
+
+                padding: 10px;
+            }
+
+
+            .game {
+
+                padding: 18px;
+
+                border-radius: 18px;
+            }
+
+
+            .title {
+
+                font-size: 28px;
+            }
+
+
+            .wheel-wrapper {
+
+                width: 330px;
+
+                height: 330px;
+            }
+
+
+            .spin-button {
+
+                width: 90px;
+
+                height: 90px;
+
+                font-size: 16px;
+
+                border-width: 6px;
+            }
+
+
+            .pointer {
+
+                border-left-width: 20px;
+
+                border-right-width: 20px;
+
+                border-top-width: 45px;
+            }
+
+
+            .modal-box {
+
+                padding: 25px;
+            }
+
+
+            .modal-buttons {
+
+                flex-direction: column;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================
+     MAIN GAME
+===================================== -->
+
+<div class="game">
+
+
+    <!-- =================================
+         LEFT SIDE
+    ================================== -->
+
+    <div class="panel">
+
+
+        <h1 class="title">
+            🎡 Name Spinner
+        </h1>
+
+
+        <p class="subtitle">
+            Add names and spin the wheel!
+        </p>
+
+
+        <!-- INPUT -->
+
+        <div class="input-area">
+
+            <input
+                type="text"
+                id="nameInput"
+                placeholder="Enter name..."
+                autocomplete="off"
+            >
+
+            <button
+                class="add-btn"
+                id="addButton"
+                onclick="addName()"
+            >
+                ADD
+            </button>
+
+        </div>
+
+
+        <!-- NAME LIST -->
+
+        <div
+            class="name-list"
+            id="nameList"
+        ></div>
+
+
+        <!-- RESULT -->
+
+        <div
+            class="result"
+            id="result"
+        >
+            Add at least 2 names
+        </div>
+
+
+    </div>
+
+
+    <!-- =================================
+         RIGHT SIDE
+    ================================== -->
+
+    <div class="wheel-area">
+
+
+        <!-- POINTER -->
+
+        <div class="pointer"></div>
+
+
+        <div class="wheel-wrapper">
+
+
+            <!-- WHEEL -->
+
+            <canvas
+                id="wheel"
+                width="530"
+                height="530"
+            ></canvas>
+
+
+            <!-- CENTER BUTTON -->
+
+            <button
+                class="spin-button"
+                id="spinButton"
+                onclick="spinWheel()"
+            >
+                SPIN
+            </button>
+
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================
+     WINNER MODAL
+===================================== -->
+
+<div
+    class="modal"
+    id="winnerModal"
+>
+
+
+    <div class="modal-box">
+
+
+        <div class="trophy">
+            🏆
+        </div>
+
+
+        <h2>
+            We Have a Winner!
+        </h2>
+
+
+        <div
+            class="winner-name"
+            id="winnerName"
+        >
+            Winner
+        </div>
+
+
+        <p>
+            Do you want to remove this winner
+            from the wheel?
+        </p>
+
+
+        <div class="modal-buttons">
+
+
+            <button
+                class="yes-btn"
+                onclick="removeWinner()"
+            >
+                YES, REMOVE
+            </button>
+
+
+            <button
+                class="no-btn"
+                onclick="keepWinner()"
+            >
+                NO, KEEP
+            </button>
+
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+
+/* =====================================================
+   DOM ELEMENTS
+===================================================== */
+
+const canvas =
+    document.getElementById("wheel");
+
+const ctx =
+    canvas.getContext("2d");
+
+
+const nameInput =
+    document.getElementById("nameInput");
+
+const addButton =
+    document.getElementById("addButton");
+
+const nameList =
+    document.getElementById("nameList");
+
+const spinButton =
+    document.getElementById("spinButton");
+
+const result =
+    document.getElementById("result");
+
+const winnerModal =
+    document.getElementById("winnerModal");
+
+const winnerName =
+    document.getElementById("winnerName");
+
+
+
+/* =====================================================
+   GAME DATA
+===================================================== */
+
+
+/*
+   IMPORTANT:
+
+   Start with an EMPTY array.
+
+   The first 3 names inserted by the user
+   will automatically become priority names.
+*/
+
+let names = [];
+
+
+/*
+   Stores the first 3 inserted names.
+
+   Example:
+
+   Ali
+   Ahmed
+   Sara
+
+   becomes:
+
+   priorityNames = [
+       "Ali",
+       "Ahmed",
+       "Sara"
+   ];
+*/
+
+let priorityNames = [];
+
+
+/*
+   Which priority name should win next?
+
+   0 = first name
+   1 = second name
+   2 = third name
+*/
+
+let priorityIndex = 0;
+
+
+/*
+   Current wheel rotation.
+*/
+
+let rotation = 0;
+
+
+/*
+   Is wheel currently spinning?
+*/
+
+let spinning = false;
+
+
+/*
+   Winner information.
+*/
+
+let selectedWinnerIndex = -1;
+
+let selectedWinnerName = "";
+
+
+
+/* =====================================================
+   COLORS
+===================================================== */
+
+const colors = [
+
+    "#ff6b6b",
+    "#feca57",
+    "#48dbfb",
+    "#1dd1a1",
+    "#5f27cd",
+    "#ff9ff3",
+    "#54a0ff",
+    "#00d2d3",
+    "#ff9f43",
+    "#10ac84",
+    "#ee5253",
+    "#576574",
+    "#a55eea",
+    "#20bf6b",
+    "#eb3b5a"
+
+];
+
+
+
+/* =====================================================
+   LOCAL STORAGE
+===================================================== */
+
+
+/*
+   Save game data.
+
+   This allows names and priority progress
+   to survive page refresh.
+*/
+
+function saveGame() {
+
+    const gameData = {
+
+        names: names,
+
+        priorityNames: priorityNames,
+
+        priorityIndex: priorityIndex
+
+    };
+
+
+    localStorage.setItem(
+        "nameSpinnerGame",
+        JSON.stringify(gameData)
+    );
+
+}
+
+
+/*
+   Load saved game.
+*/
+
+function loadGame() {
+
+    const saved =
+        localStorage.getItem(
+            "nameSpinnerGame"
+        );
+
+
+    if (!saved) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const gameData =
+            JSON.parse(saved);
+
+
+        names =
+            Array.isArray(gameData.names)
+                ? gameData.names
+                : [];
+
+
+        priorityNames =
+            Array.isArray(gameData.priorityNames)
+                ? gameData.priorityNames
+                : [];
+
+
+        priorityIndex =
+            Number.isInteger(
+                gameData.priorityIndex
+            )
+                ? gameData.priorityIndex
+                : 0;
+
+
+    } catch (error) {
+
+        console.log(
+            "Could not load saved game."
+        );
+
+        names = [];
+
+        priorityNames = [];
+
+        priorityIndex = 0;
+
+    }
+
+}
+
+
+
+/* =====================================================
+   NORMALIZE ANGLE
+===================================================== */
+
+function normalizeAngle(angle) {
+
+    const TWO_PI =
+        Math.PI * 2;
+
+
+    return (
+        (angle % TWO_PI) +
+        TWO_PI
+    ) % TWO_PI;
+
+}
+
+
+
+/* =====================================================
+   DRAW WHEEL
+===================================================== */
+
+function drawWheel() {
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    const centerX =
+        canvas.width / 2;
+
+    const centerY =
+        canvas.height / 2;
+
+
+    const radius =
+        canvas.width / 2 - 5;
+
+
+    /*
+       No names.
+    */
+
+    if (names.length === 0) {
+
+        ctx.beginPath();
+
+        ctx.arc(
+            centerX,
+            centerY,
+            radius,
+            0,
+            Math.PI * 2
+        );
+
+
+        ctx.fillStyle =
+            "#e0e0e0";
+
+        ctx.fill();
+
+
+        ctx.fillStyle =
+            "#555";
+
+        ctx.font =
+            "bold 25px Arial";
+
+        ctx.textAlign =
+            "center";
+
+        ctx.textBaseline =
+            "middle";
+
+
+        ctx.fillText(
+            "ADD NAMES",
+            centerX,
+            centerY
+        );
+
+
+        return;
+
+    }
+
+
+    /*
+       Calculate section size.
+    */
+
+    const sliceAngle =
+        (Math.PI * 2) /
+        names.length;
+
+
+    ctx.save();
+
+
+    /*
+       Move origin to center.
+    */
+
+    ctx.translate(
+        centerX,
+        centerY
+    );
+
+
+    /*
+       Rotate entire wheel.
+    */
+
+    ctx.rotate(rotation);
+
+
+    /*
+       Draw every section.
+    */
+
+    for (
+        let i = 0;
+        i < names.length;
+        i++
+    ) {
+
+
+        const startAngle =
+            i * sliceAngle;
+
+
+        const endAngle =
+            startAngle + sliceAngle;
+
+
+        /* =========================
+           SECTION
+        ========================= */
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            0,
+            0
+        );
+
+
+        ctx.arc(
+            0,
+            0,
+            radius,
+            startAngle,
+            endAngle
+        );
+
+
+        ctx.closePath();
+
+
+        ctx.fillStyle =
+            colors[i % colors.length];
+
+
+        ctx.fill();
+
+
+        /* =========================
+           BORDER
+        ========================= */
+
+        ctx.strokeStyle =
+            "white";
+
+        ctx.lineWidth = 3;
+
+        ctx.stroke();
+
+
+        /* =========================
+           NAME
+        ========================= */
+
+        ctx.save();
+
+
+        const middleAngle =
+            startAngle +
+            sliceAngle / 2;
+
+
+        ctx.rotate(
+            middleAngle
+        );
+
+
+        ctx.textAlign =
+            "right";
+
+        ctx.textBaseline =
+            "middle";
+
+
+        ctx.fillStyle =
+            "white";
+
+
+        /*
+           Smaller text for many names.
+        */
+
+        let fontSize = 21;
+
+
+        if (names.length > 8) {
+
+            fontSize = 18;
+
+        }
+
+
+        if (names.length > 12) {
+
+            fontSize = 15;
+
+        }
+
+
+        if (names.length > 18) {
+
+            fontSize = 12;
+
+        }
+
+
+        ctx.font =
+            `bold ${fontSize}px Arial`;
+
+
+        /*
+           Limit very long names.
+        */
+
+        let displayName =
+            names[i];
+
+
+        if (displayName.length > 18) {
+
+            displayName =
+                displayName.substring(
+                    0,
+                    16
+                ) + "...";
+
+        }
+
+
+        ctx.fillText(
+            displayName,
+            radius - 22,
+            0
+        );
+
+
+        ctx.restore();
+
+    }
+
+
+    ctx.restore();
+
+
+    /*
+       =========================
+       CENTER CIRCLE
+       =========================
+    */
+
+    ctx.beginPath();
+
+
+    ctx.arc(
+        centerX,
+        centerY,
+        55,
+        0,
+        Math.PI * 2
+    );
+
+
+    ctx.fillStyle =
+        "#333";
+
+
+    ctx.fill();
+
+
+    ctx.strokeStyle =
+        "#777";
+
+
+    ctx.lineWidth = 5;
+
+
+    ctx.stroke();
+
+}
+
+
+
+/* =====================================================
+   ADD NAME
+===================================================== */
+
+function addName() {
+
+
+    /*
+       Never allow adding while spinning.
+    */
+
+    if (spinning) {
+
+        return;
+
+    }
+
+
+    const name =
+        nameInput.value.trim();
+
+
+    /*
+       Empty input.
+    */
+
+    if (name === "") {
+
+        alert(
+            "Please enter a name."
+        );
+
+        return;
+
+    }
+
+
+    /*
+       Add name to wheel.
+    */
+
+    names.push(name);
+
+
+    /*
+       FIRST THREE NAMES LOGIC
+       
+       Only the first 3 inserted names
+       are stored as priority names.
+    */
+
+    if (
+        priorityNames.length < 3
+    ) {
+
+        priorityNames.push(name);
+
+    }
+
+
+    /*
+       Clear input.
+    */
+
+    nameInput.value = "";
+
+
+    /*
+       Save.
+    */
+
+    saveGame();
+
+
+    /*
+       Refresh UI.
+    */
+
+    updateList();
+
+    drawWheel();
+
+    updateSpinButton();
+
+
+    /*
+       Focus input again.
+    */
+
+    nameInput.focus();
+
+}
+
+
+
+/* =====================================================
+   ENTER KEY
+===================================================== */
+
+nameInput.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "Enter"
+        ) {
+
+            addName();
+
+        }
+
+    }
+);
+
+
+
+/* =====================================================
+   UPDATE NAME LIST
+===================================================== */
+
+function updateList() {
+
+    nameList.innerHTML = "";
+
+
+    /*
+       No names.
+    */
+
+    if (names.length === 0) {
+
+        nameList.innerHTML =
+            `
+            <div class="empty">
+                No names added yet.
+            </div>
+            `;
+
+        return;
+
+    }
+
+
+    /*
+       Create each name.
+    */
+
+    names.forEach(
+        function(name, index) {
+
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "name-item";
+
+
+            /*
+               Left side.
+            */
+
+            const left =
+                document.createElement(
+                    "div"
+                );
+
+
+            /*
+               Number.
+            */
+
+            const number =
+                document.createElement(
+                    "span"
+                );
+
+
+            number.className =
+                "name-number";
+
+
+            number.textContent =
+                `${index + 1}.`;
+
+
+            /*
+               Name.
+            */
+
+            const text =
+                document.createElement(
+                    "span"
+                );
+
+
+            text.textContent =
+                name;
+
+
+            left.appendChild(number);
+
+            left.appendChild(text);
+
+
+            /*
+               Priority indicator.
+
+               Only first 3 inserted names.
+            */
+
+            if (
+                priorityNames.includes(
+                    name
+                )
+            ) {
+
+                const priority =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                priority.className =
+                    "priority";
+
+
+                priority.textContent =
+                    "★ PRIORITY";
+
+
+                left.appendChild(
+                    priority
+                );
+
+            }
+
+
+            /*
+               Delete button.
+            */
+
+            const deleteButton =
+                document.createElement(
+                    "button"
+                );
+
+
+            deleteButton.className =
+                "delete-name";
+
+
+            deleteButton.textContent =
+                "X";
+
+
+            deleteButton.disabled =
+                spinning;
+
+
+            deleteButton.onclick =
+                function() {
+
+                    deleteName(index);
+
+                };
+
+
+            item.appendChild(left);
+
+            item.appendChild(
+                deleteButton
+            );
+
+
+            nameList.appendChild(item);
+
+        }
+    );
+
+}
+
+
+
+/* =====================================================
+   MANUAL DELETE NAME
+===================================================== */
+
+function deleteName(index) {
+
+    /*
+       Don't allow deletion while spinning.
+    */
+
+    if (spinning) {
+
+        return;
+
+    }
+
+
+    if (
+        index < 0 ||
+        index >= names.length
+    ) {
+
+        return;
+
+    }
+
+
+    const nameToDelete =
+        names[index];
+
+
+    /*
+       If this name is one of the
+       first three priority names,
+       remove it from priority list.
+    */
+
+    const priorityPosition =
+        priorityNames.indexOf(
+            nameToDelete
+        );
+
+
+    if (
+        priorityPosition !== -1
+    ) {
+
+        priorityNames.splice(
+            priorityPosition,
+            1
+        );
+
+
+        /*
+           Adjust priority index.
+
+           Example:
+
+           Ali
+           Ahmed
+           Sara
+
+           If Ali is manually deleted,
+           Ahmed becomes first priority.
+        */
+
+        if (
+            priorityPosition <
+            priorityIndex
+        ) {
+
+            priorityIndex--;
+
+        }
+
+
+        if (
+            priorityIndex < 0
+        ) {
+
+            priorityIndex = 0;
+
+        }
+
+    }
+
+
+    /*
+       Remove from wheel.
+    */
+
+    names.splice(
+        index,
+        1
+    );
+
+
+    /*
+       Save.
+    */
+
+    saveGame();
+
+
+    /*
+       Refresh.
+    */
+
+    updateList();
+
+    drawWheel();
+
+    updateSpinButton();
+
+}
+
+
+
+/* =====================================================
+   UPDATE SPIN BUTTON
+===================================================== */
+
+function updateSpinButton() {
+
+    /*
+       At least 2 names required.
+    */
+
+    if (
+        names.length < 2 ||
+        spinning
+    ) {
+
+        spinButton.disabled =
+            true;
+
+    } else {
+
+        spinButton.disabled =
+            false;
+
+    }
+
+}
+
+
+
+/* =====================================================
+   GET NEXT WINNER
+===================================================== */
+
+function getNextWinner() {
+
+    /*
+       =========================================
+       FIRST THREE NAMES
+       =========================================
+
+       If there are still priority names,
+       choose them in insertion order.
+    */
+
+    while (
+        priorityIndex <
+        priorityNames.length
+    ) {
+
+        const priorityName =
+            priorityNames[
+                priorityIndex
+            ];
+
+
+        /*
+           Check whether this name
+           still exists on wheel.
+
+           It may have been manually removed.
+        */
+
+        const wheelIndex =
+            names.indexOf(
+                priorityName
+            );
+
+
+        if (
+            wheelIndex !== -1
+        ) {
+
+            return {
+                index: wheelIndex,
+                name: priorityName,
+                priority: true
+            };
+
+        }
+
+
+        /*
+           If priority name no longer
+           exists, skip it.
+        */
+
+        priorityIndex++;
+
+    }
+
+
+    /*
+       =========================================
+       AFTER FIRST 3
+       =========================================
+
+       Completely random winner.
+    */
+
+    const randomIndex =
+        Math.floor(
+            Math.random() *
+            names.length
+        );
+
+
+    return {
+
+        index: randomIndex,
+
+        name: names[randomIndex],
+
+        priority: false
+
+    };
+
+}
+
+
+
+/* =====================================================
+   SPIN WHEEL
+===================================================== */
+
+function spinWheel() {
+
+
+    /*
+       Don't allow double click.
+    */
+
+    if (spinning) {
+
+        return;
+
+    }
+
+
+    /*
+       Need at least 2 names.
+    */
+
+    if (names.length < 2) {
+
+        alert(
+            "Please add at least 2 names!"
+        );
+
+        return;
+
+    }
+
+
+    /*
+       Lock game.
+    */
+
+    spinning = true;
+
+
+    spinButton.disabled =
+        true;
+
+
+    nameInput.disabled =
+        true;
+
+
+    addButton.disabled =
+        true;
+
+
+    updateList();
+
+
+    result.textContent =
+        "🎡 Spinning...";
+
+
+    /*
+       =========================================
+       SELECT WINNER FIRST
+       =========================================
+    */
+
+    const winner =
+        getNextWinner();
+
+
+    selectedWinnerIndex =
+        winner.index;
+
+
+    selectedWinnerName =
+        winner.name;
+
+
+    /*
+       =========================================
+       IMPORTANT
+       
+       If this is one of the first 3
+       priority names, advance the priority
+       AFTER choosing it.
+
+       This means:
+
+       Spin 1 → Ali
+       Spin 2 → Ahmed
+       Spin 3 → Sara
+    =========================================
+    */
+
+    if (
+        winner.priority
+    ) {
+
+        priorityIndex++;
+
+    }
+
+
+    /*
+       Save priority progress.
+    */
+
+    saveGame();
+
+
+    /*
+       =========================================
+       CALCULATE WHEEL ANGLE
+       =========================================
+    */
+
+    const sliceAngle =
+        (Math.PI * 2) /
+        names.length;
+
+
+    /*
+       Center of winner section.
+    */
+
+    const winnerAngle =
+        selectedWinnerIndex *
+        sliceAngle +
+        sliceAngle / 2;
+
+
+    /*
+       Pointer is at TOP.
+
+       Top = -PI / 2
+    */
+
+    const pointerAngle =
+        -Math.PI / 2;
+
+
+    /*
+       Required final wheel rotation.
+    */
+
+    const desiredRotation =
+        pointerAngle -
+        winnerAngle;
+
+
+    /*
+       Normalize current rotation.
+    */
+
+    const currentNormalized =
+        normalizeAngle(
+            rotation
+        );
+
+
+    /*
+       Normalize desired rotation.
+    */
+
+    const desiredNormalized =
+        normalizeAngle(
+            desiredRotation
+        );
+
+
+    /*
+       Calculate shortest forward
+       adjustment to exact winner.
+    */
+
+    let adjustment =
+        desiredNormalized -
+        currentNormalized;
+
+
+    if (
+        adjustment < 0
+    ) {
+
+        adjustment +=
+            Math.PI * 2;
+
+    }
+
+
+    /*
+       =========================================
+       WHOLE FULL SPINS
+       =========================================
+
+       8-12 complete rotations.
+
+       This is important.
+
+       We don't use decimal full-spin
+       calculations that can cause confusion.
+    */
+
+    const fullSpins =
+        Math.floor(
+            Math.random() * 5
+        ) + 8;
+
+
+    const totalRotation =
+        fullSpins *
+        Math.PI *
+        2 +
+        adjustment;
+
+
+    const startRotation =
+        rotation;
+
+
+    const targetRotation =
+        startRotation +
+        totalRotation;
+
+
+    /*
+       =========================================
+       ANIMATION TIME
+       =========================================
+
+       6 seconds.
+
+       Fast → medium → slow → very slow.
+    */
+
+    const duration =
+        6000;
+
+
+    const startTime =
+        performance.now();
+
+
+
+    /* =========================================
+       ANIMATION
+    ========================================= */
+
+    function animate(currentTime) {
+
+
+        const elapsed =
+            currentTime -
+            startTime;
+
+
+        let progress =
+            elapsed / duration;
+
+
+        if (
+            progress >= 1
+        ) {
+
+            progress = 1;
+
+        }
+
+
+        /*
+           =====================================
+           EASING
+           =====================================
+
+           Quintic ease-out.
+
+           This gives:
+
+           FAST
+             ↓
+           FAST
+             ↓
+           MEDIUM
+             ↓
+           SLOW
+             ↓
+           VERY SLOW
+             ↓
+           STOP
+        */
+
+        const eased =
+            1 -
+            Math.pow(
+                1 - progress,
+                5
+            );
+
+
+        rotation =
+            startRotation +
+            totalRotation *
+            eased;
+
+
+        drawWheel();
+
+
+        /*
+           Continue animation.
+        */
+
+        if (
+            progress < 1
+        ) {
+
+            requestAnimationFrame(
+                animate
+            );
+
+            return;
+
+        }
+
+
+        /*
+           =====================================
+           FORCE EXACT FINAL POSITION
+           =====================================
+
+           This guarantees that the visual
+           wheel and winner are identical.
+        */
+
+        rotation =
+            targetRotation;
+
+
+        drawWheel();
+
+
+        /*
+           Wheel is now stopped.
+        */
+
+        spinning = false;
+
+
+        /*
+           Show winner in result.
+        */
+
+        result.textContent =
+            "🏆 Winner: " +
+            selectedWinnerName;
+
+
+        /*
+           Show modal.
+        */
+
+        winnerName.textContent =
+            selectedWinnerName;
+
+
+        winnerModal.classList.add(
+            "show"
+        );
+
+
+        /*
+           IMPORTANT:
+
+           We DO NOT enable the controls here.
+
+           The user MUST choose:
+
+           YES, REMOVE
+           OR
+           NO, KEEP
+        */
+
+    }
+
+
+    /*
+       Start animation.
+    */
+
+    requestAnimationFrame(
+        animate
+    );
+
+}
+
+
+
+/* =====================================================
+   REMOVE WINNER
+===================================================== */
+
+function removeWinner() {
+
+
+    /*
+       Safety check.
+    */
+
+    if (
+        selectedWinnerIndex === -1
+    ) {
+
+        return;
+
+    }
+
+
+    /*
+       Remove winner from priority list
+       if it still exists there.
+
+       Normally priorityIndex has already
+       moved forward, so this doesn't affect
+       the sequence.
+    */
+
+    const priorityPosition =
+        priorityNames.indexOf(
+            selectedWinnerName
+        );
+
+
+    if (
+        priorityPosition !== -1
+    ) {
+
+        priorityNames.splice(
+            priorityPosition,
+            1
+        );
+
+
+        /*
+           If priority position is before
+           the next priority position,
+           adjust it.
+        */
+
+        if (
+            priorityPosition <
+            priorityIndex
+        ) {
+
+            priorityIndex--;
+
+        }
+
+
+        if (
+            priorityIndex < 0
+        ) {
+
+            priorityIndex = 0;
+
+        }
+
+    }
+
+
+    /*
+       Remove winner from wheel.
+    */
+
+    names.splice(
+        selectedWinnerIndex,
+        1
+    );
+
+
+    /*
+       Reset winner.
+    */
+
+    selectedWinnerIndex =
+        -1;
+
+    selectedWinnerName =
+        "";
+
+
+    /*
+       Close popup.
+    */
+
+    winnerModal.classList.remove(
+        "show"
+    );
+
+
+    /*
+       Unlock controls.
+    */
+
+    nameInput.disabled =
+        false;
+
+    addButton.disabled =
+        false;
+
+
+    /*
+       Save game.
+    */
+
+    saveGame();
+
+
+    /*
+       Refresh.
+    */
+
+    updateList();
+
+    drawWheel();
+
+    updateSpinButton();
+
+
+    /*
+       Result.
+    */
+
+    if (
+        names.length === 0
+    ) {
+
+        result.textContent =
+            "No names left!";
+
+    }
+
+    else if (
+        names.length === 1
+    ) {
+
+        result.textContent =
+            "Only 1 name left";
+
+    }
+
+    else {
+
+        result.textContent =
+            "Winner removed! 🎡";
+
+    }
+
+
+    nameInput.focus();
+
+}
+
+
+
+/* =====================================================
+   KEEP WINNER
+===================================================== */
+
+function keepWinner() {
+
+
+    /*
+       Winner stays in wheel.
+
+       IMPORTANT:
+
+       Priority sequence has already moved
+       to the next name.
+
+       Therefore:
+
+       Ali → KEEP
+       next spin → Ahmed
+
+       NOT Ali again.
+    */
+
+
+    selectedWinnerIndex =
+        -1;
+
+    selectedWinnerName =
+        "";
+
+
+    /*
+       Close popup.
+    */
+
+    winnerModal.classList.remove(
+        "show"
+    );
+
+
+    /*
+       Unlock controls.
+    */
+
+    nameInput.disabled =
+        false;
+
+    addButton.disabled =
+        false;
+
+
+    /*
+       Save progress.
+    */
+
+    saveGame();
+
+
+    /*
+       Update button.
+    */
+
+    updateSpinButton();
+
+
+    /*
+       Message.
+    */
+
+    result.textContent =
+        "Winner kept! Spin again 🎡";
+
+
+    nameInput.focus();
+
+}
+
+
+
+/* =====================================================
+   INITIALIZE GAME
+===================================================== */
+
+loadGame();
+
+updateList();
+
+drawWheel();
+
+updateSpinButton();
+
+
+</script>
+
+</body>
+
+</html>
