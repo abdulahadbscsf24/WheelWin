@@ -1,8 +1,8 @@
-# 🎡 Spinova — Interactive Name Spinner
+# 🎡 WheelWin — Interactive Name Spinner
 
 > **Spin. Pick. Win. 🏆**
 
-Spinova is a modern and interactive **random name spinner game** built with **HTML, CSS, and Vanilla JavaScript**.
+WheelWin is a modern and interactive **random name spinner game** built with **HTML, CSS, and Vanilla JavaScript**.
 
 Add names to the wheel, press the **SPIN** button, and watch the wheel rotate at high speed before gradually slowing down and stopping exactly on the selected winner.
 
